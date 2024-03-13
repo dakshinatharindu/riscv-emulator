@@ -5,6 +5,7 @@
 #ifndef CORE_H
 #define CORE_H
 
+#include <cstdint>
 
 class Core {
 public:
@@ -12,11 +13,16 @@ public:
 
     ~Core();
 
-    void run();
+    void run(int instrt);
+
+    void print_state();
 
 private:
-    int pc;
-    int reg[32];
+    uint32_t pc;
+    uint32_t reg[32];
+    uint8_t *mem;
+
+
 };
 
 
