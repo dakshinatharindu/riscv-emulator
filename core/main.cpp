@@ -7,8 +7,7 @@
 
 int main() {
     Core core;
-    core.run(0x00000037);
-    core.run(0x00000017);
+    core.run(0xcae10367);
 
     core.print_state();
     return 0;
