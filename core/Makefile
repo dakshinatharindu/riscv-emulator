@@ -8,7 +8,7 @@ CC = g++
 all: $(TARGET)
 
 $(TARGET): $(DEPENDENCIES)
-	$(CC) -o $(TARGET) $(SOURCES)
+	$(CC) -g -o $(TARGET) $(SOURCES)
 
 test: $(TARGET)
 	./$(TARGET)
