@@ -10,6 +10,10 @@
 #define BRANCH 0b1100011
 #define LOAD 0b0000011
 #define STORE 0b0100011
+#define OP_IMM 0b0010011
+#define OP 0b0110011
+#define FENCE 0b0001111
+#define SYSTEM 0b1110011
 
 #include "Core.h"
 #include <iostream>
@@ -143,6 +147,8 @@ void Core::run(int instrt) {
                     std::cout << "Unknown load opcode" << std::endl;
             }
             if (rd) this->reg[rd] = load_val;
+            this->pc += 4;
+            break;
         }
         case STORE: {
             uint32_t imm = ((instrt >> 25) & 0x7F) << 5 | (instrt >> 7) & 0x1F;
@@ -164,6 +170,91 @@ void Core::run(int instrt) {
                 default:
                     std::cout << "Unknown store opcode" << std::endl;
             }
+            this->pc += 4;
+            break;
+        }
+        case OP_IMM: {
+            uint32_t imm = instrt >> 20;
+            if (imm & 0x800) imm |= 0xFFFFF000;
+            uint32_t rs1_val = this->reg[(instrt >> 15) & 0x1F];
+            uint32_t rd = (instrt >> 7) & 0x1F;
+            uint32_t val = 0;
+            switch ((instrt >> 12) & 0x7) {
+                case 0b000: // ADDI
+                    val = rs1_val + imm;
+                    break;
+                case 0b010: // SLTI
+                    val = (int32_t) rs1_val < (int32_t) imm;
+                    break;
+                case 0b011: // SLTIU
+                    val = rs1_val < imm;
+                    break;
+                case 0b100: // XORI
+                    val = rs1_val ^ imm;
+                    break;
+                case 0b110: // ORI
+                    val = rs1_val | imm;
+                    break;
+                case 0b111: // ANDI
+                    val = rs1_val & imm;
+                    break;
+                case 0b001: // SLLI
+                    val = rs1_val << (imm & 0x1F);
+                    break;
+                case 0b101: // SRLI/SRAI
+                    val = (instrt >> 30) ? (((int32_t) rs1_val) >> (imm & 0x1F)) : (rs1_val >> (imm & 0x1F));
+                    break;
+                default:
+                    std::cout << "Unknown OP_IMM opcode" << std::endl;
+            }
+            if (rd) this->reg[rd] = val;
+            this->pc += 4;
+            break;
+        }
+        case OP: {
+            uint32_t rs1_val = this->reg[(instrt >> 15) & 0x1F];
+            uint32_t rs2_val = this->reg[(instrt >> 20) & 0x1F];
+            uint32_t rd = (instrt >> 7) & 0x1F;
+            uint32_t val = 0;
+            switch ((instrt >> 12) & 0x7) {
+                case 0b000: // ADD/SUB
+                    val = (instrt >> 30) ? (rs1_val - rs2_val) : (rs1_val + rs2_val);
+                    break;
+                case 0b001: // SLL
+                    val = rs1_val << (rs2_val & 0x1F);
+                    break;
+                case 0b010: // SLT
+                    val = (int32_t) rs1_val < (int32_t) rs2_val;
+                    break;
+                case 0b011: // SLTU
+                    val = rs1_val < rs2_val;
+                    break;
+                case 0b100: // XOR
+                    val = rs1_val ^ rs2_val;
+                    break;
+                case 0b101: // SRL/SRA
+                    val = (instrt >> 30) ? (((int32_t) rs1_val) >> (rs2_val & 0x1F)) : (rs1_val >> (rs2_val & 0x1F));
+                    break;
+                case 0b110: // OR
+                    val = rs1_val | rs2_val;
+                    break;
+                case 0b111: // AND
+                    val = rs1_val & rs2_val;
+                    break;
+                default:
+                    std::cout << "Unknown OP opcode" << std::endl;
+            }
+            if (rd) this->reg[rd] = val;
+            this->pc += 4;
+            break;
+        }
+        case FENCE: {
+            this->pc += 4;
+            break;
+        }
+        case SYSTEM: {
+            this->pc += 4;
+            break;
         }
         default:
             std::cout << "Unknown opcode" << std::endl;
