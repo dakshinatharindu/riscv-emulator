@@ -1,17 +1,17 @@
-TARGET = core
+TARGETS = core
 HEADERS = Core.h
 SOURCES = main.cpp Core.cpp
 DEPENDENCIES = $(SOURCES) $(HEADERS) Makefile
 
 CC = g++
 
-all: $(TARGET)
+all: $(TARGETS)
 
-$(TARGET): $(DEPENDENCIES)
-	$(CC) -g -o $(TARGET) $(SOURCES)
+$(TARGETS): $(DEPENDENCIES)
+	$(CC) -g -o $(TARGETS) $(SOURCES)
 
-test: $(TARGET)
-	./$(TARGET)
+test: $(TARGETS)
+	./$(TARGETS)
 
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGETS)
