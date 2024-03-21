@@ -1,9 +1,9 @@
 TARGETS = core
-HEADERS = Core.h
-SOURCES = main.cpp Core.cpp
+HEADERS = core.h
+SOURCES = core.c
 DEPENDENCIES = $(SOURCES) $(HEADERS) Makefile
 
-CC = g++
+CC = gcc
 
 all: $(TARGETS)
 
