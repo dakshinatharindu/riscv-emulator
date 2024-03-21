@@ -1,5 +1,5 @@
 int main() {
-    char *str = "Hello, World!";
+//    char *str = "Hello, World!";
     int a, b, c;
     a = 1;
     b = 2;

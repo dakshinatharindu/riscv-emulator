@@ -13,6 +13,10 @@ SECTIONS {
         LONG(_start)
     }
 
-    .text : { *(.text) }
-    .rodata : { *(.rodata) }
+    .text : ALIGN(16) {
+        *(.text)
+    }
+    .rodata : ALIGN(16) {
+        *(.rodata)
+    }
 }
