@@ -11,7 +11,7 @@ $(TARGETS): $(DEPENDENCIES)
 	$(CC) -g -o $(TARGETS) $(SOURCES)
 
 test: $(TARGETS)
-	./$(TARGETS)
+	./$(TARGETS) ../baremetal/program.bin
 
 clean:
 	rm -f $(TARGETS)
