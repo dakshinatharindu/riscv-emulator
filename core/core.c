@@ -12,9 +12,11 @@ int main(int argc, char **argv) {
 
     load_image(argv[1]);
 
-    for (int i = 0; i < 252; i++) {
-        printf("%02x", image[i]);
-    }
+    state = (void *) image;
+    printf("PC: %08x\n", state->pc);
+    uint32_t instr = *(uint32_t *) (image + state->pc);
+    printf("Instr: %08x\n", instr);
+
     return 0;
 }
 
@@ -36,5 +38,14 @@ void load_image(char *filename) {
     }
 
     fclose(f);
+}
+
+void execute() {
+    if (state->pc & 3) {
+        fprintf(stderr, "Error: PC is not word aligned\n");
+        exit(EXIT_FAILURE);
+    }
+
+    uint32_t instr = *(uint32_t *) (image + state->pc);
 }
 

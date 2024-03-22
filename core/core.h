@@ -14,9 +14,12 @@ uint8_t *image;
 struct State {
     uint32_t reg[32];
     uint32_t pc;
-};
+    uint32_t reserved[3];
+} *state;
 
 // Function prototypes
 void load_image(char *filename);
+
+void execute();
 
 #endif // CORE_H
