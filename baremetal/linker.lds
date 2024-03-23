@@ -1,3 +1,6 @@
+__heap_size = 0x200;
+__stack_size = 0x800;
+
 ENTRY(_start)
 
 SECTIONS {
@@ -18,5 +21,17 @@ SECTIONS {
     }
     .rodata : ALIGN(16) {
         *(.rodata)
+    }
+
+    .heap : ALIGN( 16 ) {
+        _sheap = .;
+        . = . + __heap_size;
+        _eheap = .;
+    }
+
+    .stack : ALIGN( 16 ) {
+        _estack = .;
+        . = . + __stack_size;
+        _sstack = .;
     }
 }
