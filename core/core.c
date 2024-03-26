@@ -12,10 +12,9 @@ int main(int argc, char **argv) {
 
     load_image(argv[1]);
 
-    state = (void *) image;
-    printf("PC: %08x\n", state->pc);
-    uint32_t instr = *(uint32_t *) (image + state->pc);
-    printf("Instr: %08x\n", instr);
+    while (1) {
+        execute();
+    }
 
     return 0;
 }
@@ -38,6 +37,9 @@ void load_image(char *filename) {
     }
 
     fclose(f);
+
+    // Initialize the state
+    state = (void *) image;
 }
 
 void execute() {
@@ -92,8 +94,8 @@ void execute() {
                            (instrt & 0xF00) >> 7 | (instrt & 0x80) << 4;
             if (imm & 0x800)
                 imm |= 0xFFFFF000;
-            int32_t rs1_val = state->reg[(instrt >> 15) & 0x1F];
-            int32_t rs2_val = state->reg[(instrt >> 20) & 0x1F];
+            int32_t rs1_val = (int32_t) state->reg[(instrt >> 15) & 0x1F];
+            int32_t rs2_val = (int32_t) state->reg[(instrt >> 20) & 0x1F];
             switch ((instrt >> 12) & 0x7) {
                 case 0b000: // BEQ
                     if (rs1_val == rs2_val)
@@ -195,7 +197,7 @@ void execute() {
             if (imm & 0x800) imm |= 0xFFFFF000;
             uint32_t rs1_val = state->reg[(instrt >> 15) & 0x1F];
             uint32_t rd = (instrt >> 7) & 0x1F;
-            uint32_t val = 0;
+            uint32_t val;
             switch ((instrt >> 12) & 0x7) {
                 case 0b000: // ADDI
                     val = rs1_val + imm;
@@ -233,7 +235,7 @@ void execute() {
             uint32_t rs1_val = state->reg[(instrt >> 15) & 0x1F];
             uint32_t rs2_val = state->reg[(instrt >> 20) & 0x1F];
             uint32_t rd = (instrt >> 7) & 0x1F;
-            uint32_t val = 0;
+            uint32_t val;
             switch ((instrt >> 12) & 0x7) {
                 case 0b000: // ADD/SUB
                     val = (instrt >> 30) ? (rs1_val - rs2_val) : (rs1_val + rs2_val);
