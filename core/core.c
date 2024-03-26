@@ -139,59 +139,61 @@ void execute() {
             }
             break;
         }
-//        case LOAD: {
-//            uint32_t imm = instrt >> 20;
-//            if (imm & 0x800) imm |= 0xFFFFF000;
-//            uint32_t rs1 = (instrt >> 15) & 0x1F;
-//            uint32_t rd = (instrt >> 7) & 0x1F;
-//            uint32_t addr = state->reg[rs1] + imm;
-//            uint32_t load_val = 0;
-//            switch ((instrt >> 12) & 0x7) {
-//                case 0b000: // LB
-//                    load_val = *((int8_t *) (state->mem + addr));
-//                    break;
-//                case 0b001: // LH
-//                    load_val = *((int16_t *) (state->mem + addr));
-//                    break;
-//                case 0b010: // LW
-//                    load_val = *((uint32_t *) (state->mem + addr));
-//                    break;
-//                case 0b100: // LBU
-//                    load_val = *((uint8_t *) (state->mem + addr));
-//                    break;
-//                case 0b101: // LHU
-//                    load_val = *((uint16_t *) (state->mem + addr));
-//                    break;
-//                default:
-//                    std::cout << "Unknown load opcode" << std::endl;
-//            }
-//            if (rd) state->reg[rd] = load_val;
-//            state->pc += 4;
-//            break;
-//        }
-//        case STORE: {
-//            uint32_t imm = ((instrt >> 25) & 0x7F) << 5 | (instrt >> 7) & 0x1F;
-//            if (imm & 0x800) imm |= 0xFFFFF000;
-//            uint32_t rs1 = (instrt >> 15) & 0x1F;
-//            uint32_t rs2 = (instrt >> 20) & 0x1F;
-//            uint32_t addr = state->reg[rs1] + imm;
-//            uint32_t store_val = state->reg[rs2];
-//            switch ((instrt >> 12) & 0x7) {
-//                case 0b000: // SB
-//                    *((uint8_t *) (state->mem + addr)) = store_val;
-//                    break;
-//                case 0b001: // SH
-//                    *((uint16_t *) (state->mem + addr)) = store_val;
-//                    break;
-//                case 0b010: // SW
-//                    *((uint32_t *) (state->mem + addr)) = store_val;
-//                    break;
-//                default:
-//                    std::cout << "Unknown store opcode" << std::endl;
-//            }
-//            state->pc += 4;
-//            break;
-//        }
+        case LOAD: {
+            uint32_t imm = instrt >> 20;
+            if (imm & 0x800) imm |= 0xFFFFF000;
+            uint32_t rs1 = (instrt >> 15) & 0x1F;
+            uint32_t rd = (instrt >> 7) & 0x1F;
+            uint32_t addr = state->reg[rs1] + imm;
+            uint32_t load_val = 0;
+            switch ((instrt >> 12) & 0x7) {
+                case 0b000: // LB
+                    load_val = *((int8_t *) (image + addr));
+                    break;
+                case 0b001: // LH
+                    load_val = *((int16_t *) (image + addr));
+                    break;
+                case 0b010: // LW
+                    load_val = *((uint32_t *) (image + addr));
+                    break;
+                case 0b100: // LBU
+                    load_val = *((uint8_t *) (image + addr));
+                    break;
+                case 0b101: // LHU
+                    load_val = *((uint16_t *) (image + addr));
+                    break;
+                default:
+                    fprintf(stderr, "Unknown load opcode\n");
+                    exit(EXIT_FAILURE);
+            }
+            if (rd) state->reg[rd] = load_val;
+            state->pc += 4;
+            break;
+        }
+        case STORE: {
+            uint32_t imm = ((instrt >> 25) & 0x7F) << 5 | (instrt >> 7) & 0x1F;
+            if (imm & 0x800) imm |= 0xFFFFF000;
+            uint32_t rs1 = (instrt >> 15) & 0x1F;
+            uint32_t rs2 = (instrt >> 20) & 0x1F;
+            uint32_t addr = state->reg[rs1] + imm;
+            uint32_t store_val = state->reg[rs2];
+            switch ((instrt >> 12) & 0x7) {
+                case 0b000: // SB
+                    *((uint8_t *) (image + addr)) = store_val;
+                    break;
+                case 0b001: // SH
+                    *((uint16_t *) (image + addr)) = store_val;
+                    break;
+                case 0b010: // SW
+                    *((uint32_t *) (image + addr)) = store_val;
+                    break;
+                default:
+                    fprintf(stderr, "Unknown store opcode\n");
+                    exit(EXIT_FAILURE);
+            }
+            state->pc += 4;
+            break;
+        }
         case OP_IMM: {
             uint32_t imm = instrt >> 20;
             if (imm & 0x800) imm |= 0xFFFFF000;
