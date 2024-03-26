@@ -7,7 +7,7 @@ SECTIONS {
     . = 0x0;
     .header : ALIGN(16) {
         /* Register File*/
-        LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0)
+        LONG(0) LONG(0) LONG(_sstack) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0)
         LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0)
         LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0)
         LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0)
