@@ -8,5 +8,6 @@ int main() {
 
 int _start() {
     main();
+    asm volatile("ebreak");
     return 0;
 }
