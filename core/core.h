@@ -32,6 +32,6 @@ struct State {
 // Function prototypes
 void load_image(char *filename);
 
-void execute();
+uint8_t execute();
 
 #endif // CORE_H

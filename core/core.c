@@ -12,8 +12,10 @@ int main(int argc, char **argv) {
 
     load_image(argv[1]);
 
+    uint8_t ret;
     while (1) {
-        execute();
+        ret = execute();
+        if (ret) break;
     }
 
     return 0;
@@ -42,13 +44,15 @@ void load_image(char *filename) {
     state = (void *) image;
 }
 
-void execute() {
+uint8_t execute() {
     if (state->pc & 3) {
         fprintf(stderr, "Error: PC is not word aligned\n");
         exit(EXIT_FAILURE);
     }
 
     uint32_t instrt = *(uint32_t *) (image + state->pc);
+
+    uint8_t ret = 0;
 
     switch (instrt & 0x7F) {
         case LUI: {
@@ -277,6 +281,7 @@ void execute() {
         }
         case SYSTEM: {
             state->pc += 4;
+            ret = 1;
             break;
         }
         default:
