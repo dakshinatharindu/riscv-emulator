@@ -10,7 +10,7 @@ OBJCOPY=/opt/riscv-toolchain/bin/riscv64-unknown-elf-objcopy
 OBJDUMP=/opt/riscv-toolchain/bin/riscv64-unknown-elf-objdump
 
 CFLAGS = -march=rv32i -mabi=ilp32
-LDFLAGS = -nostdlib -T $(LINKER_SCRIPT)
+LDFLAGS = -nostdlib -T $(LINKER_SCRIPT) #-g -nostartfiles
 
 SOURCES = program.c
 DEPENDENCIES = $(SOURCES) $(LINKER_SCRIPT) Makefile

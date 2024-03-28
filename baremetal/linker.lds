@@ -34,4 +34,8 @@ SECTIONS {
         . = . + __stack_size;
         _sstack = .;
     }
+
+    PROVIDE( uarthead = 0xfb000 );
+    PROVIDE( uarttail = 0xfb004 );
+    PROVIDE( uartbuffer = 0xfb100 );
 }

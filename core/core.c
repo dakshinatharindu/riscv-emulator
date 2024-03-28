@@ -32,7 +32,7 @@ void load_image(char *filename) {
     long flen = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    image = malloc(flen);
+    image = malloc(MEM_SIZE);
     if (fread(image, 1, flen, f) != flen) {
         fprintf(stderr, "Error: Could not read file %s\n", filename);
         exit(EXIT_FAILURE);

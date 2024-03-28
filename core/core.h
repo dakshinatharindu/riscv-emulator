@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 uint8_t *image;
+const static uint32_t MEM_SIZE = 1 << 24;
 
 struct State {
     uint32_t reg[32];
