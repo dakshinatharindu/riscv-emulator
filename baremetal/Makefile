@@ -5,9 +5,9 @@ LINKER_SCRIPT=linker.lds
 
 TARGETS = $(BIN_FILE) $(ELF_FILE) $(DEBUG_FILE)
 
-CC=/opt/riscv/bin/riscv32-unknown-elf-gcc
-OBJCOPY=/opt/riscv/bin/riscv32-unknown-elf-objcopy
-OBJDUMP=/opt/riscv/bin/riscv32-unknown-elf-objdump
+CC=/opt/riscv-gnu-toolchain/bin/riscv32-unknown-elf-gcc
+OBJCOPY=/opt/riscv-gnu-toolchain/bin/riscv32-unknown-elf-objcopy
+OBJDUMP=/opt/riscv-gnu-toolchain/bin/riscv32-unknown-elf-objdump
 
 CFLAGS = -march=rv32i -mabi=ilp32
 LDFLAGS = -nostdlib -T $(LINKER_SCRIPT) #-g -nostartfiles
