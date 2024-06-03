@@ -14,3 +14,18 @@
 ### Make and install
     make
 
+## Installing QEMU
+
+### Getting the sources
+    git clone https://github.com/qemu/qemu
+
+### Prerequisites
+    sudo apt install autoconf automake autotools-dev curl libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev git
+
+### Configure
+    ./configure --target-list=riscv32-softmmu,riscv32-linux-user --prefix=/opt/qemu-riscv32
+
+### Make and install
+    make -j$(nproc)
+    sudo make install
+
