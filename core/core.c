@@ -299,12 +299,10 @@ uint8_t execute() {
 }
 
 void print_handler() {
-    uint8_t buff_head = *(image + 0xfb000);
     uint8_t buff_tail = *(image + 0xfb004);
     uint8_t *buff = (uint8_t *) (image + 0xfb100);
 
-    for (uint8_t i = buff_head; i != buff_tail; i = (i + 1) % 256) {
+    for (uint8_t i = 0; i < buff_tail; i = (i + 1) % 256) {
         putchar(buff[i]);
     }
 }
-

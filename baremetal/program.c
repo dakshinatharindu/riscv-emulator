@@ -2,14 +2,16 @@ extern char uartbuffer[256];
 extern char uarthead;
 extern char uarttail;
 
-void putuart(char c) {
-    uartbuffer[uarttail] = c;
-    uarttail++;
-}
-
 void print(const char *str) {
     char c;
-    while (c = *(str++)) putuart(c);
+	uarttail = 0;
+    while (c = *(str++)) {
+		if (uarttail == 255) {
+			asm volatile("ecall");
+        }
+		uartbuffer[uarttail] = c;
+    	uarttail++;
+	}
     asm volatile("ecall");
 }
 
@@ -18,7 +20,7 @@ int main() {
     a = 1;
     b = 2;
     c = a + b;
-    print("Hello, World!\n");
+    print("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ornare leo sit amet ante molestie lacinia. Aliquam venenatis ut velit in cursus. Ut non porttitor quam. Maecenas vel feugiat nulla, in condimentum est. Fusce pharetra quam at metus aeadsf adsfa sdfk\n");
 }
 
 int _start() {
