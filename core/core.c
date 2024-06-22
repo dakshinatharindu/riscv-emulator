@@ -281,12 +281,30 @@ uint8_t execute() {
         }
         case SYSTEM: {
             state->pc += 4;
-            ret = 1;
+            if ((instrt >> 20) & 0x1) {
+                // EBREAK
+                ret = 1;
+            } else {
+                // ECALL
+                print_handler();
+            }
             break;
         }
         default:
             fprintf(stderr, "Unknown opcode\n");
             exit(EXIT_FAILURE);
+    }
+
+    return ret;
+}
+
+void print_handler() {
+    uint8_t buff_head = *(image + 0xfb000);
+    uint8_t buff_tail = *(image + 0xfb004);
+    uint8_t *buff = (uint8_t *) (image + 0xfb100);
+
+    for (uint8_t i = buff_head; i != buff_tail; i = (i + 1) % 256) {
+        putchar(buff[i]);
     }
 }
 

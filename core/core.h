@@ -35,4 +35,6 @@ void load_image(char *filename);
 
 uint8_t execute();
 
+void print_handler();
+
 #endif // CORE_H

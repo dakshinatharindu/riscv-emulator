@@ -3,14 +3,14 @@ extern char uarthead;
 extern char uarttail;
 
 void putuart(char c) {
-    if (((unsigned char) (uarthead + 1)) == uarttail) return;
-    uartbuffer[uarthead] = c;
-    uarthead++;
+    uartbuffer[uarttail] = c;
+    uarttail++;
 }
 
 void print(const char *str) {
     char c;
     while (c = *(str++)) putuart(c);
+    asm volatile("ecall");
 }
 
 int main() {
