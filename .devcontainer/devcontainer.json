@@ -1,0 +1,15 @@
+{
+    "name": "Risc-V Dev Container",
+    "dockerFile": "dockerfile",
+    "context": "..",
+    "customizations": {
+        "vscode": {
+            "settings": {},
+            "extensions": [
+                "ms-vscode.cpptools",
+                "ms-python.python"
+            ]
+        }
+    },
+    "remoteUser": "riscv"
+}
