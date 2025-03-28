@@ -38,3 +38,6 @@
 *.bin
 *.elf
 *.debug.txt
+
+# Buildroot
+buildroot/*
