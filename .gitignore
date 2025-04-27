@@ -41,3 +41,5 @@
 
 # Buildroot
 buildroot/*
+kernel/*
+mini-rv32ima/*
