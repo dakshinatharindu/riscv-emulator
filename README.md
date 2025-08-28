@@ -29,3 +29,12 @@
     make -j$(nproc)
     sudo make install
 
+## Using QEMU for debugging
+### Start qemu with debugging
+    qemu-system-riscv32 -cpu rv32,mmu=false -m 128M -machine virt -nographic -kernel buildroot/output/images/Image -bios none -s -S
+
+### Connect to GDB session
+    gdb-multiarch
+    set architecture riscv:rv32
+    set disassemble-next-line on
+    target remote :1234
