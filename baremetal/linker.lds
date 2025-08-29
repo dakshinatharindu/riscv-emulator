@@ -1,41 +1,72 @@
-__heap_size = 0x200;
-__stack_size = 0x800;
+__heap_size = 0x1000;
+__stack_size = 0x1000;
 
 ENTRY(_start)
 
-SECTIONS {
-    . = 0x0;
-    .header : ALIGN(16) {
-        /* Register File*/
-        LONG(0) LONG(0) LONG(_sstack) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0)
-        LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0)
-        LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0)
-        LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0) LONG(0)
+SECTIONS 
+{
+	. = 0x80000000;
 
-        /* Entry Point */
-        LONG(_start)
-    }
+	.text : ALIGN(16) {
+		__TEXT_BEGIN__ = .;
+		*(.initial_jump)
+		*(.entry.text)
+		*(.init.literal)
+		*(.init)
+		*(.text)
+		*(.literal .text .literal.* .text.* .stub)
+		*(.out_jump.literal.*)
+		*(.out_jump.*)
+		__TEXT_END__ = .;
+	}
 
-    .text : ALIGN(16) {
-        *(.text)
-    }
-    .rodata : ALIGN(16) {
-        *(.rodata)
-    }
+	/* If we're on a newer compiler */
+	/DISCARD/ :
+	{
+		*(.interp)
+		*(.dynsym)
+		*(.dynstr)
+		*(.header)
+	} : phdr
 
-    .heap : ALIGN( 16 ) {
-        _sheap = .;
-        . = . + __heap_size;
-        _eheap = .;
-    }
+	.data : ALIGN(16) {
+		__DATA_BEGIN__ = .;
+		*(.rodata)
+		*(.rodata.*)
+		*(.gnu.linkonce.r.*)
+		*(.rodata1)
+		*(.dynsbss)
+		*(.gnu.linkonce.sb.*)
+		*(.scommon)
+		*(.gnu.linkonce.sb2.*)
+		*(.sbss)
+		*(.sbss.*)
+		*(.sbss2)
+		*(.sbss2.*)
+		*(.dynbss)
+		*(.data)
+		*(.data.*)
+		*(.got)
+		*(.got.*)
+		__DATA_END__ = .;
+	}
 
-    .stack : ALIGN( 16 ) {
-        _estack = .;
-        . = . + __stack_size;
-        _sstack = .;
-    }
+	.bss : ALIGN( 16 ) {
+		__BSS_BEGIN__ = .;
+		*(.bss) /* Tricky: BSS needs to be allocated but not sent. GCC Will not populate these for calculating data size */
+		*(.bss.*)
+		__BSS_END__ = .;
+	}
 
-    PROVIDE( uarthead = 0xfb000 );
-    PROVIDE( uarttail = 0xfb004 );
-    PROVIDE( uartbuffer = 0xfb100 );
+	.heap : ALIGN( 16 ) {
+		_sheap = .;
+		. = . + __heap_size;
+		_eheap = .;
+	}
+
+	.stack : ALIGN( 16 ) {
+		_estack = .;
+		. = . + __stack_size;
+		_sstack = .;
+	}
 }

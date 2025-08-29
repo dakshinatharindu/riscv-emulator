@@ -5,15 +5,17 @@ LINKER_SCRIPT=linker.lds
 
 TARGETS = $(BIN_FILE) $(ELF_FILE) $(DEBUG_FILE)
 
-CC=riscv32-unknown-elf-gcc
-OBJCOPY=riscv32-unknown-elf-objcopy
-OBJDUMP=riscv32-unknown-elf-objdump
+CC=../buildroot/output/host/bin/riscv32-buildroot-linux-uclibc-gcc
+OBJCOPY=../buildroot/output/host/bin/riscv32-buildroot-linux-uclibc-objcopy
+OBJDUMP=../buildroot/output/host/bin/riscv32-buildroot-linux-uclibc-objdump
 
-CFLAGS = -march=rv32i -mabi=ilp32
-LDFLAGS = -nostdlib -T $(LINKER_SCRIPT) #-g -nostartfiles
+CFLAGS:=-fno-stack-protector
+CFLAGS+=-static-libgcc -fdata-sections -ffunction-sections
+CFLAGS+=-g -Os -march=rv32ima_zicsr -mabi=ilp32 -static
+LDFLAGS:= -T $(LINKER_SCRIPT) -nostdlib -Wl,--gc-sections
 
-SOURCES = program.c
-DEPENDENCIES = $(SOURCES) $(LINKER_SCRIPT) Makefile
+SOURCES = program.c init.S
+DEPENDENCIES = $(SOURCES) $(LINKER_SCRIPT) Makefile 
 
 all: $(TARGETS)
 
