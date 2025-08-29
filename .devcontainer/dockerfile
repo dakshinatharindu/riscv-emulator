@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     lsb-release wget software-properties-common gnupg \
     ninja-build pkg-config libglib2.0-dev \
     xxd file cpio unzip rsync bc \
+    gdb-multiarch \
     && apt-get clean
 
 # Install Risc-V toolchain
