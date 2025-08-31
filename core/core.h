@@ -5,36 +5,34 @@
 #ifndef CORE_H
 #define CORE_H
 
-#define LUI     0b0110111
-#define AUIPC   0b0010111
-#define JAL     0b1101111
-#define JALR    0b1100111
-#define BRANCH  0b1100011
-#define LOAD    0b0000011
-#define STORE   0b0100011
-#define OP_IMM  0b0010011
-#define OP      0b0110011
-#define FENCE   0b0001111
-#define SYSTEM  0b1110011
-
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#define LUI 0b0110111
+#define AUIPC 0b0010111
+#define JAL 0b1101111
+#define JALR 0b1100111
+#define BRANCH 0b1100011
+#define LOAD 0b0000011
+#define STORE 0b0100011
+#define OP_IMM 0b0010011
+#define OP 0b0110011
+#define FENCE 0b0001111
+#define SYSTEM 0b1110011
+
+#define IMAGE_OFFSET 0x80000000
 
 uint8_t *image;
 const static uint32_t MEM_SIZE = 1 << 24;
 
 struct State {
-    uint32_t reg[32];
-    uint32_t pc;
-    uint32_t reserved[3];
+  uint32_t reg[32]; // Register file
+  uint32_t pc;      // Program counter
 } *state;
 
 // Function prototypes
 void load_image(char *filename);
-
 uint8_t execute();
-
-void print_handler();
 
 #endif // CORE_H

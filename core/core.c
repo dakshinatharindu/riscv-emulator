@@ -41,7 +41,7 @@ void load_image(char *filename) {
     fclose(f);
 
     // Initialize the state
-    state = (void *) image;
+    state = (void *)(image + MEM_SIZE - sizeof(struct State));
 }
 
 uint8_t execute() {
@@ -50,7 +50,7 @@ uint8_t execute() {
         exit(EXIT_FAILURE);
     }
 
-    uint32_t instrt = *(uint32_t *) (image + state->pc);
+    uint32_t instrt = *(uint32_t *)(image + state->pc);
 
     uint8_t ret = 0;
 
@@ -58,81 +58,74 @@ uint8_t execute() {
         case LUI: {
             uint32_t imm = instrt & 0xFFFFF000;
             uint32_t rd = (instrt >> 7) & 0x1F;
-            if (rd)
-                state->reg[rd] = imm;
+            if (rd) state->reg[rd] = imm;
             state->pc += 4;
             break;
         }
         case AUIPC: {
             uint32_t imm = instrt & 0xFFFFF000;
             uint32_t rd = (instrt >> 7) & 0x1F;
-            if (rd)
-                state->reg[rd] = state->pc + imm;
+            if (rd) state->reg[rd] = state->pc + imm;
             state->pc += 4;
             break;
         }
         case JAL: {
             uint32_t imm = (instrt & 0x80000000) >> 11 | (instrt & 0x7FE00000) >> 20 |
                            (instrt & 0x100000) >> 9 | (instrt & 0xFF000);
-            if (imm & 0x80000)
-                imm |= 0xFFF00000;
+            if (imm & 0x80000) imm |= 0xFFF00000;
             uint32_t rd = (instrt >> 7) & 0x1F;
-            if (rd)
-                state->reg[rd] = state->pc + 4;
+            if (rd) state->reg[rd] = state->pc + 4;
             state->pc += imm;
             break;
         }
         case JALR: {
             uint32_t imm = (instrt & 0xFFF00000) >> 20;
-            if (imm & 0x800)
-                imm |= 0xFFFFF000;
+            if (imm & 0x800) imm |= 0xFFFFF000;
             uint32_t rs1 = (instrt >> 15) & 0x1F;
             uint32_t rd = (instrt >> 7) & 0x1F;
-            if (rd)
-                state->reg[rd] = state->pc + 4;
+            if (rd) state->reg[rd] = state->pc + 4;
             state->pc = (state->reg[rs1] + imm) & 0xFFFFFFFE;
             break;
         }
         case BRANCH: {
             uint32_t imm = (instrt & 0x80000000) >> 19 | (instrt & 0x7E000000) >> 20 |
                            (instrt & 0xF00) >> 7 | (instrt & 0x80) << 4;
-            if (imm & 0x800)
-                imm |= 0xFFFFF000;
-            int32_t rs1_val = (int32_t) state->reg[(instrt >> 15) & 0x1F];
-            int32_t rs2_val = (int32_t) state->reg[(instrt >> 20) & 0x1F];
+            if (imm & 0x800) imm |= 0xFFFFF000;
+            int32_t rs1_val = (int32_t)state->reg[(instrt >> 15) & 0x1F];
+            int32_t rs2_val = (int32_t)state->reg[(instrt >> 20) & 0x1F];
             switch ((instrt >> 12) & 0x7) {
-                case 0b000: // BEQ
+                case 0b000:  // BEQ
                     if (rs1_val == rs2_val)
                         state->pc += imm;
                     else
                         state->pc += 4;
                     break;
-                case 0b001: // BNE
+                case 0b001:  // BNE
                     if (rs1_val != rs2_val)
                         state->pc += imm;
                     else
                         state->pc += 4;
                     break;
-                case 0b100: // BLT
+                case 0b100:  // BLT
                     if (rs1_val < rs2_val)
                         state->pc += imm;
                     else
                         state->pc += 4;
                     break;
-                case 0b101: // BGE
+                case 0b101:  // BGE
                     if (rs1_val >= rs2_val)
                         state->pc += imm;
                     else
                         state->pc += 4;
                     break;
-                case 0b110: // BLTU
-                    if ((uint32_t) rs1_val < (uint32_t) rs2_val)
+                case 0b110:  // BLTU
+                    if ((uint32_t)rs1_val < (uint32_t)rs2_val)
                         state->pc += imm;
                     else
                         state->pc += 4;
                     break;
-                case 0b111: // BGEU
-                    if ((uint32_t) rs1_val >= (uint32_t) rs2_val)
+                case 0b111:  // BGEU
+                    if ((uint32_t)rs1_val >= (uint32_t)rs2_val)
                         state->pc += imm;
                     else
                         state->pc += 4;
@@ -151,20 +144,20 @@ uint8_t execute() {
             uint32_t addr = state->reg[rs1] + imm;
             uint32_t load_val = 0;
             switch ((instrt >> 12) & 0x7) {
-                case 0b000: // LB
-                    load_val = *((int8_t *) (image + addr));
+                case 0b000:  // LB
+                    load_val = *((int8_t *)(image + addr));
                     break;
-                case 0b001: // LH
-                    load_val = *((int16_t *) (image + addr));
+                case 0b001:  // LH
+                    load_val = *((int16_t *)(image + addr));
                     break;
-                case 0b010: // LW
-                    load_val = *((uint32_t *) (image + addr));
+                case 0b010:  // LW
+                    load_val = *((uint32_t *)(image + addr));
                     break;
-                case 0b100: // LBU
-                    load_val = *((uint8_t *) (image + addr));
+                case 0b100:  // LBU
+                    load_val = *((uint8_t *)(image + addr));
                     break;
-                case 0b101: // LHU
-                    load_val = *((uint16_t *) (image + addr));
+                case 0b101:  // LHU
+                    load_val = *((uint16_t *)(image + addr));
                     break;
                 default:
                     fprintf(stderr, "Unknown load opcode\n");
@@ -182,14 +175,14 @@ uint8_t execute() {
             uint32_t addr = state->reg[rs1] + imm;
             uint32_t store_val = state->reg[rs2];
             switch ((instrt >> 12) & 0x7) {
-                case 0b000: // SB
-                    *((uint8_t *) (image + addr)) = store_val;
+                case 0b000:  // SB
+                    *((uint8_t *)(image + addr)) = store_val;
                     break;
-                case 0b001: // SH
-                    *((uint16_t *) (image + addr)) = store_val;
+                case 0b001:  // SH
+                    *((uint16_t *)(image + addr)) = store_val;
                     break;
-                case 0b010: // SW
-                    *((uint32_t *) (image + addr)) = store_val;
+                case 0b010:  // SW
+                    *((uint32_t *)(image + addr)) = store_val;
                     break;
                 default:
                     fprintf(stderr, "Unknown store opcode\n");
@@ -205,29 +198,30 @@ uint8_t execute() {
             uint32_t rd = (instrt >> 7) & 0x1F;
             uint32_t val;
             switch ((instrt >> 12) & 0x7) {
-                case 0b000: // ADDI
+                case 0b000:  // ADDI
                     val = rs1_val + imm;
                     break;
-                case 0b010: // SLTI
-                    val = (int32_t) rs1_val < (int32_t) imm;
+                case 0b010:  // SLTI
+                    val = (int32_t)rs1_val < (int32_t)imm;
                     break;
-                case 0b011: // SLTIU
+                case 0b011:  // SLTIU
                     val = rs1_val < imm;
                     break;
-                case 0b100: // XORI
+                case 0b100:  // XORI
                     val = rs1_val ^ imm;
                     break;
-                case 0b110: // ORI
+                case 0b110:  // ORI
                     val = rs1_val | imm;
                     break;
-                case 0b111: // ANDI
+                case 0b111:  // ANDI
                     val = rs1_val & imm;
                     break;
-                case 0b001: // SLLI
+                case 0b001:  // SLLI
                     val = rs1_val << (imm & 0x1F);
                     break;
-                case 0b101: // SRLI/SRAI
-                    val = (instrt >> 30) ? (((int32_t) rs1_val) >> (imm & 0x1F)) : (rs1_val >> (imm & 0x1F));
+                case 0b101:  // SRLI/SRAI
+                    val = (instrt >> 30) ? (((int32_t)rs1_val) >> (imm & 0x1F))
+                                         : (rs1_val >> (imm & 0x1F));
                     break;
                 default:
                     fprintf(stderr, "Unknown OP_IMM opcode\n");
@@ -243,28 +237,29 @@ uint8_t execute() {
             uint32_t rd = (instrt >> 7) & 0x1F;
             uint32_t val;
             switch ((instrt >> 12) & 0x7) {
-                case 0b000: // ADD/SUB
+                case 0b000:  // ADD/SUB
                     val = (instrt >> 30) ? (rs1_val - rs2_val) : (rs1_val + rs2_val);
                     break;
-                case 0b001: // SLL
+                case 0b001:  // SLL
                     val = rs1_val << (rs2_val & 0x1F);
                     break;
-                case 0b010: // SLT
-                    val = (int32_t) rs1_val < (int32_t) rs2_val;
+                case 0b010:  // SLT
+                    val = (int32_t)rs1_val < (int32_t)rs2_val;
                     break;
-                case 0b011: // SLTU
+                case 0b011:  // SLTU
                     val = rs1_val < rs2_val;
                     break;
-                case 0b100: // XOR
+                case 0b100:  // XOR
                     val = rs1_val ^ rs2_val;
                     break;
-                case 0b101: // SRL/SRA
-                    val = (instrt >> 30) ? (((int32_t) rs1_val) >> (rs2_val & 0x1F)) : (rs1_val >> (rs2_val & 0x1F));
+                case 0b101:  // SRL/SRA
+                    val = (instrt >> 30) ? (((int32_t)rs1_val) >> (rs2_val & 0x1F))
+                                         : (rs1_val >> (rs2_val & 0x1F));
                     break;
-                case 0b110: // OR
+                case 0b110:  // OR
                     val = rs1_val | rs2_val;
                     break;
-                case 0b111: // AND
+                case 0b111:  // AND
                     val = rs1_val & rs2_val;
                     break;
                 default:
@@ -275,34 +270,70 @@ uint8_t execute() {
             state->pc += 4;
             break;
         }
+
         case FENCE: {
             state->pc += 4;
             break;
         }
+
         case SYSTEM: {
             state->pc += 4;
-            if ((instrt >> 20) & 0x1) {
-                // EBREAK
-                ret = 1;
-            } else {
-                // ECALL
-                print_handler();
+            uint32_t csr = instrt >> 20;
+            uint32_t rd_val;
+
+            switch ((instrt >> 12) & 0x7) {
+                case 0b000:          // ECALL/EBREAK
+                    if (csr == 0) {  // ECALL
+                        ret = 1;
+                    } else if (csr == 1) {  // EBREAK
+                        fprintf(stderr, "EBREAK encountered\n");
+                        exit(EXIT_FAILURE);
+                    } else {
+                        fprintf(stderr, "Unknown SYSTEM instruction\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    break;
+                case 0b001:  // CSRRW
+                    uint32_t rs1_val = state->reg[(instrt >> 15) & 0x1F];
+                    if (csr == 0x138) {
+                        // Print "string"
+                        uint32_t ptrstart = rs1_val - IMAGE_OFFSET;
+                        uint32_t ptrend = ptrstart;
+                        if (ptrstart >= image) printf("DEBUG PASSED INVALID PTR (%08x)\n", rs1_val);
+                        while (ptrend < image) {
+                            if (image[ptrend] == 0) break;
+                            ptrend++;
+                        }
+                        if (ptrend != ptrstart)
+                            fwrite(image + ptrstart, ptrend - ptrstart, 1, stdout);
+                    }
+                    break;
+                case 0b010:  // CSRRS
+                    // Dummy CSR set
+                    break;
+                case 0b011:  // CSRRC
+                    // Dummy CSR clear
+                    break;
+                case 0b101:  // CSRRWI
+                    // Dummy CSR write immediate
+                    break;
+                case 0b110:  // CSRRSI
+                    // Dummy CSR set immediate
+                    break;
+                case 0b111:  // CSRRCI
+                    // Dummy CSR clear immediate
+                    break;
+                default:
+                    fprintf(stderr, "Unknown SYSTEM instruction\n");
+                    exit(EXIT_FAILURE);
             }
             break;
         }
+
         default:
             fprintf(stderr, "Unknown opcode\n");
             exit(EXIT_FAILURE);
     }
 
     return ret;
-}
-
-void print_handler() {
-    uint8_t buff_tail = *(image + 0xfb004);
-    uint8_t *buff = (uint8_t *) (image + 0xfb100);
-
-    for (uint8_t i = 0; i < buff_tail; i = (i + 1) % 256) {
-        putchar(buff[i]);
-    }
 }
