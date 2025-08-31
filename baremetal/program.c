@@ -13,7 +13,9 @@ int main() {
   int b = 7;
   int product = multiply(a, b);
 
-  print("Hello from RISC-V");
+  print("Hello from RISC-V\n");
+
+  asm volatile("ecall");
 
   return 0;
 }
