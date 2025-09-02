@@ -11,6 +11,7 @@ int main(int argc, char **argv) {
     }
 
     load_image(argv[1]);
+    init_state();
 
     uint8_t ret;
     while (1) {
@@ -19,6 +20,11 @@ int main(int argc, char **argv) {
     }
 
     return 0;
+}
+
+void init_state() {
+    state->misa =  0x40401101; // RV32IM
+    state->mvendorid = 0xff0ff0ff; // Example vendor ID
 }
 
 void load_image(char *filename) {
@@ -295,17 +301,54 @@ uint8_t execute() {
                     break;
                 case 0b001:  // CSRRW
                     uint32_t rs1_val = state->reg[(instrt >> 15) & 0x1F];
-                    if (csr == 0x138) {
-                        // Print "string"
-                        uint32_t ptrstart = rs1_val - IMAGE_OFFSET;
-                        uint32_t ptrend = ptrstart;
-                        if (ptrstart >= image) printf("DEBUG PASSED INVALID PTR (%08x)\n", rs1_val);
-                        while (ptrend < image) {
-                            if (image[ptrend] == 0) break;
-                            ptrend++;
-                        }
-                        if (ptrend != ptrstart)
-                            fwrite(image + ptrstart, ptrend - ptrstart, 1, stdout);
+                    switch (csr) {
+                        case 0x300:     // mstatus
+                            rd_val = GET_CSR(mstatus);
+                            SET_CSR(mstatus, rs1_val);
+                            break;
+                        case 0x301:     // misa
+                            rd_val = GET_CSR(misa);
+                            SET_CSR(misa, rs1_val);
+                            break;
+                        case 0x304:     // mie
+                            rd_val = GET_CSR(mie);
+                            SET_CSR(mie, rs1_val);
+                            break;
+                        case 0x305:     // mtvec
+                            rd_val = GET_CSR(mtvec);
+                            SET_CSR(mtvec, rs1_val);
+                            break;
+                        case 0x340:     // mscratch
+                            rd_val = GET_CSR(mscratch);
+                            SET_CSR(mscratch, rs1_val);
+                            break;
+                        case 0x341:     // mepc
+                            rd_val = GET_CSR(mepc);
+                            SET_CSR(mepc, rs1_val);
+                            break;
+                        case 0x342:     // mcause
+                            rd_val = GET_CSR(mcause);
+                            SET_CSR(mcause, rs1_val);
+                            break;
+                        case 0x343:     // mtval
+                            rd_val = GET_CSR(mtval);
+                            SET_CSR(mtval, rs1_val);
+                            break;
+                        case 0x344:     // mip
+                            rd_val = GET_CSR(mip);
+                            SET_CSR(mip, rs1_val);
+                            break;
+                        case 0xC00:     // cycle
+                            rd_val = GET_CSR(cycle);
+                            SET_CSR(cycle, rs1_val);
+                            break;
+                        case 0xf11:     // mvendorid
+                            rd_val = GET_CSR(mvendorid);
+                            SET_CSR(mvendorid, rs1_val);
+                            break;
+                        case 0x138:  // print_handler
+                            print_handler(rs1_val);
+                            break;
                     }
                     break;
                 case 0b010:  // CSRRS
@@ -336,4 +379,15 @@ uint8_t execute() {
     }
 
     return ret;
+}
+
+void print_handler(uint32_t ptr) {
+    uint32_t ptrstart = ptr - IMAGE_OFFSET;
+    uint32_t ptrend = ptrstart;
+    if (ptrstart >= image) printf("DEBUG PASSED INVALID PTR (%08x)\n", ptr);
+    while (ptrend < image) {
+        if (image[ptrend] == 0) break;
+        ptrend++;
+    }
+    if (ptrend != ptrstart) fwrite(image + ptrstart, ptrend - ptrstart, 1, stdout);
 }
