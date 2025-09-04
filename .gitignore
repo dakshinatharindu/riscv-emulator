@@ -43,3 +43,4 @@
 buildroot/*
 kernel/*
 mini-rv32ima/*
+.vscode/
