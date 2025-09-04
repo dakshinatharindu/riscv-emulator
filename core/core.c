@@ -285,6 +285,7 @@ uint8_t execute() {
         case SYSTEM: {
             state->pc += 4;
             uint32_t csr = instrt >> 20;
+            uint32_t rd = (instrt >> 7) & 0x1F;
             uint32_t rd_val;
 
             switch ((instrt >> 12) & 0x7) {
@@ -350,6 +351,8 @@ uint8_t execute() {
                             print_handler(rs1_val);
                             break;
                     }
+
+                    if (rd) state->reg[rd] = rd_val;
                     break;
                 case 0b010:  // CSRRS
                     // Dummy CSR set
