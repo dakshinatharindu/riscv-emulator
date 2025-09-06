@@ -23,7 +23,10 @@
 
 #define IMAGE_OFFSET 0x80000000
 
-#define SET_CSR(csr, val) { state->csr = val; }
+#define SET_CSR(csr, val)                                                      \
+  {                                                                            \
+    state->csr = val;                                                          \
+  }
 #define GET_CSR(csr) (state->csr)
 
 uint8_t *image;
@@ -34,18 +37,18 @@ struct State {
   uint32_t pc;      // Program counter
 
   uint32_t mstatus;
-	uint32_t cycle;
+  uint32_t cycle;
 
-	uint32_t mscratch;
-	uint32_t mtvec;
-	uint32_t mie;
-	uint32_t mip;
+  uint32_t mscratch;
+  uint32_t mtvec;
+  uint32_t mie;
+  uint32_t mip;
   uint32_t misa; // RV32IM
   uint32_t mvendorid;
 
-	uint32_t mepc;
-	uint32_t mtval;
-	uint32_t mcause;
+  uint32_t mepc;
+  uint32_t mtval;
+  uint32_t mcause;
 } *state;
 
 // Function prototypes
