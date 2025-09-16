@@ -13,9 +13,9 @@ int main() {
   int b = 7;
   int product = multiply(a, b);
 
-  print("Hello from RISC-V\n");
+  print("Hello from RISC-V Emulator\n");
 
-  asm volatile("ecall");
+  asm volatile("ecall"); // ECALL to end the program
 
   return 0;
 }
