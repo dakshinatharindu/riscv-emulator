@@ -14,4 +14,4 @@ buildroot:
 
 toolchain: buildroot
 	make -C buildroot qemu_riscv32_nommu_virt_defconfig
-	make -C buildroot -j$(nproc)
+	LD_LIBRARY_PATH="" make -C buildroot -j
