@@ -21,3 +21,7 @@ toolchain: buildroot
 	make -C buildroot -j8
 	cp -a configs/rootfsoverlay/* buildroot/output/target/
 	make -C buildroot -j8
+
+run_qemu: buildroot
+	qemu-system-riscv32 -cpu rv32,mmu=false -machine virt  -nographic -bios none -kernel buildroot/output/images/Image -s -S
+
