@@ -18,5 +18,6 @@ toolchain: buildroot
 	cp -a configs/busybox_config buildroot/busybox_config
 	cp -a configs/uclibc_config buildroot/uclibc_config
 	cp -a configs/uclibc_config buildroot/uclibc_config_extra
-	true || cp -a configs/rootfsoverlay/* buildroot/output/target/
-	make -C buildroot
+	make -C buildroot -j8
+	cp -a configs/rootfsoverlay/* buildroot/output/target/
+	make -C buildroot -j8
