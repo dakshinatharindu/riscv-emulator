@@ -1,4 +1,4 @@
-all: toolchain
+all:
 	@$(MAKE) -s -C core
 	@$(MAKE) -s -C baremetal
 
@@ -10,8 +10,8 @@ clean:
 	$(MAKE) -C baremetal clean
 
 buildroot:
-	git clone https://github.com/cnlohr/buildroot --recurse-submodules --depth 1
+	git clone https://github.com/buildroot/buildroot.git
 
 toolchain: buildroot
 	make -C buildroot qemu_riscv32_nommu_virt_defconfig
-	LD_LIBRARY_PATH="" make -C buildroot -j
+	LD_LIBRARY_PATH="" make -C buildroot -j8
