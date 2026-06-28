@@ -2,13 +2,6 @@ all:
 	@$(MAKE) -s -C core
 	@$(MAKE) -s -C baremetal
 
-test_baremetal: all
-	@$(MAKE) -s -C core test
-
-clean:
-	$(MAKE) -C core clean
-	$(MAKE) -C baremetal clean
-
 buildroot:
 	git clone https://github.com/cnlohr/buildroot --recurse-submodules --depth 1
 
